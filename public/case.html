@@ -456,8 +456,8 @@ function render(p) {
   </div>`;
 
   html += `<div class="tat">
-    <span class="tat-val">${r.tat ? esc(r.tat) : "None"}</span>
-    <span class="tat-basis">${r.tat ? esc(r.tat_basis || "") : "A query carries no response obligation and starts no timeline."}</span>
+    <span class="tat-val">${r.tat ? esc(r.tat) : "No deadline"}</span>
+    <span class="tat-basis">${r.tat ? esc(r.tat_basis || "") : "A query carries no response obligation, so no clock starts."}</span>
   </div>`;
 
   if (r.ambiguous) {
@@ -514,7 +514,7 @@ function commit(category, overrideReason) {
     channel: pending.channel,
     suggested: pending.result.category,
     category,
-    tat: category === pending.result.category ? (pending.result.tat || "None") : "\u2014",
+    tat: category === pending.result.category ? (pending.result.tat || "No deadline") : "\u2014",
     overrideReason
   });
   pending = null;
