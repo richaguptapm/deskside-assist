@@ -3,7 +3,7 @@
 // The browser only ever sends the interaction text, so this endpoint cannot be
 // used as a general-purpose LLM proxy.
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 
 const SOP = `
 QUERY
@@ -95,23 +95,36 @@ exports.handler = async (event) => {
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
-  try {
-    const res = await fetch(url, {
+  const prompt = buildPrompt(text, channel, self);
+
+  async function call(withThinkingOff) {
+    const generationConfig = {
+      temperature: 0,
+      maxOutputTokens: 4096,
+      responseMimeType: "application/json"
+    };
+    if (withThinkingOff) generationConfig.thinkingConfig = { thinkingBudget: 0 };
+
+    return fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-goog-api-key": process.env.GEMINI_API_KEY
       },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: buildPrompt(text, channel, self) }] }],
-        generationConfig: {
-          temperature: 0,
-          maxOutputTokens: 2048,
-          responseMimeType: "application/json",
-          thinkingConfig: { thinkingBudget: 0 }
-        }
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig
       })
     });
+  }
+
+  try {
+    // Try with thinking disabled (faster, cheaper). If the model rejects that
+    // parameter, fall back to a plain request.
+    let res = await call(true);
+    if (res.status === 400) {
+      res = await call(false);
+    }
 
     if (!res.ok) {
       const detail = await res.text();
