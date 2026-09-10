@@ -170,7 +170,7 @@ function tier(it){
 function timelineFor(it){
   if(!it.r) return null;
   const cat = it.logged || it.r.category;
-  if(cat === "Query") return { label:"None", basis:"A query carries no response obligation." };
+  if(cat === "Query") return { label:"No deadline", basis:"A query carries no response obligation, so no clock starts." };
   const t = TAT[it.r.transaction_type] || TAT.none;
   return { label:t.label, basis:t.basis };
 }
