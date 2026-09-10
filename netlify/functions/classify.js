@@ -106,22 +106,30 @@ exports.handler = async (event) => {
         contents: [{ parts: [{ text: buildPrompt(text, channel, self) }] }],
         generationConfig: {
           temperature: 0,
-          maxOutputTokens: 900,
-          responseMimeType: "application/json"
+          maxOutputTokens: 2048,
+          responseMimeType: "application/json",
+          thinkingConfig: { thinkingBudget: 0 }
         }
       })
     });
 
     if (!res.ok) {
       const detail = await res.text();
-      console.error("Gemini error", res.status, detail.slice(0, 400));
-      return { statusCode: 502, headers, body: JSON.stringify({ error: "Classification service unavailable." }) };
+      return { statusCode: 502, headers, body: JSON.stringify({
+        error: "Google returned " + res.status + ": " + detail.slice(0, 300)
+      }) };
     }
 
     const data = await res.json();
-    const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+    const cand = (data.candidates && data.candidates[0]) || null;
+    const parts = (cand && cand.content && cand.content.parts) || [];
     const raw = parts.filter(p => typeof p.text === "string").map(p => p.text).join("");
-    if (!raw) throw new Error("empty response");
+    if (!raw) {
+      return { statusCode: 502, headers, body: JSON.stringify({
+        error: "No text returned. finishReason=" + (cand ? cand.finishReason : "none") +
+               " payload=" + JSON.stringify(data).slice(0, 300)
+      }) };
+    }
 
     const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
 
@@ -130,7 +138,6 @@ exports.handler = async (event) => {
 
     return { statusCode: 200, headers, body: JSON.stringify(parsed) };
   } catch (e) {
-    console.error("classify failed", e.message);
-    return { statusCode: 502, headers, body: JSON.stringify({ error: "Could not classify this interaction." }) };
+    return { statusCode: 502, headers, body: JSON.stringify({ error: "Function error: " + e.message }) };
   }
 };
