@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morning queue — Deskside Assist</title>
+<style>html,body{margin:0;padding:0;background:#E3E7EA}</style>
+</head><body>
+<div style="max-width:1180px;margin:0 auto;padding:14px 18px 0;font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:13px">
+  <a href="/" style="color:#5D6772;text-decoration:none">Deskside Assist</a>
+  <span style="color:#C7CED4"> / </span><a href="/queue.html" style="color:#5D6772;text-decoration:none">Morning queue</a>
+  <span style="color:#C7CED4"> / </span><a href="/case.html" style="color:#5D6772;text-decoration:none">Single case</a>
+</div>
+<style>
+  :root{
+    --ground:#E3E7EA; --surface:#FFF; --ink:#121A20; --muted:#5D6772; --faint:#8A939C;
+    --rule:#C7CED4; --soft:#DDE2E6;
+    --query:#4A5560; --request:#1F5F8B; --complaint:#9E2A3C;
+    --flag:#8A5A00; --flagbg:#FBF3E2; --ok:#1F6B4A;
+  }
+  *{box-sizing:border-box}
+  .gic{background:var(--ground);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5;padding:18px}
+  .hd{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-bottom:11px;border-bottom:1px solid var(--rule);margin-bottom:14px;flex-wrap:wrap}
+  .hd h1{font-size:16.5px;font-weight:600;margin:0;letter-spacing:-.01em}
+  .hd p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+  .who{font-size:12.5px;color:var(--muted);text-align:right}
+  .who strong{color:var(--ink);font-weight:600}
+
+  .panel{background:var(--surface);border:1px solid var(--rule);border-radius:2px;padding:15px;margin-bottom:14px}
+  .panel h2{font-size:13px;font-weight:600;margin:0 0 12px;padding-bottom:7px;border-bottom:1px solid var(--soft);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .panel h2 span{font-weight:400;color:var(--muted);font-size:12px}
+
+  .btn{font-family:inherit;font-size:13.5px;border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:2px;padding:8px 15px;cursor:pointer;font-weight:500}
+  .btn:hover{background:#263340}
+  .btn:disabled{background:var(--faint);border-color:var(--faint);cursor:not-allowed}
+  .btn.q{background:transparent;color:var(--ink);border-color:var(--rule);font-weight:500}
+  .btn.q:hover{background:#F1F4F5}
+  .btn.sm{padding:5px 11px;font-size:12.5px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+  @media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--surface);border:1px solid var(--rule);border-radius:2px;padding:11px 13px}
+  .stat b{display:block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:23px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+  .stat span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+  .stat.q b{color:var(--query)} .stat.r b{color:var(--request)} .stat.c b{color:var(--complaint)}
+  .stat.w b{color:var(--flag)} .stat.n b{color:var(--ink)}
+
+  /* mix bar */
+  .mix{display:flex;height:9px;border-radius:2px;overflow:hidden;background:var(--soft);margin:2px 0 12px}
+  .mix i{display:block;height:100%}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-weight:600;font-size:12px;color:var(--muted);padding:0 9px 6px 0;border-bottom:1px solid var(--rule);white-space:nowrap}
+  td{padding:9px 9px 9px 0;border-bottom:1px solid var(--soft);vertical-align:top}
+  tr.rev{background:#FDFAF3}
+  .ref{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--muted);white-space:nowrap}
+  .txt{color:var(--ink);max-width:400px}
+  .ch{color:var(--muted);font-size:12.5px;white-space:nowrap}
+  .cat{font-weight:600;white-space:nowrap}
+  .cat.Query{color:var(--query)} .cat.Request{color:var(--request)} .cat.Complaint{color:var(--complaint)}
+  .rc{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--muted);display:block;margin-top:2px}
+  .tat{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;white-space:nowrap}
+  .pend{color:var(--faint);font-style:italic}
+
+  .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 7px;border-radius:2px;white-space:nowrap}
+  .tag.ready{background:#E8F1EC;color:var(--ok)}
+  .tag.review{background:var(--flagbg);color:var(--flag)}
+  .tag.disp{background:#F4EAEC;color:var(--complaint)}
+  .tag.thin{background:#EFF1F3;color:var(--muted)}
+  .tag.done{background:#E9EDEF;color:var(--muted)}
+
+  .exp{background:#F7F9FA;border-left:2px solid var(--rule);padding:10px 13px;margin:2px 0 4px;font-size:13px}
+  .exp h4{margin:0 0 3px;font-size:11.5px;color:var(--muted);font-weight:600}
+  .exp p{margin:0 0 9px}
+  .exp p:last-of-type{margin-bottom:0}
+  .exp .why{color:var(--ink)}
+  .exp .cite{color:var(--muted);border-left:2px solid var(--soft);padding-left:9px;font-size:12.5px}
+
+  .empty{color:var(--faint);font-size:13px;padding:30px 10px;text-align:center;line-height:1.6}
+  .err{border:1px solid #E0B4B4;background:#FBF0F0;border-left:3px solid var(--complaint);padding:9px 12px;font-size:13px;border-radius:2px;margin-bottom:10px}
+  .foot{margin-top:16px;font-size:11.5px;color:var(--faint);line-height:1.6;max-width:88ch}
+  .spin{display:inline-block;animation:sp .9s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media(prefers-reduced-motion:reduce){.spin{animation:none}}
+  select,textarea{font-family:inherit;font-size:13px;border:1px solid var(--rule);border-radius:2px;padding:6px 8px;background:#FBFCFC;width:100%}
+</style>
+
+<div class="gic">
+  <div class="hd">
+    <div>
+      <h1>Deskside Assist</h1>
+      <p>The overnight queue, classified against the bank’s own policy before the shift starts.</p>
+    </div>
+    <div class="who"><strong>Gayathri D.</strong><br>Officer, Customer Care &middot; Virtual Care</div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div class="mix" id="mix"></div>
+
+  <div class="panel">
+    <h2>Queue <span id="qmeta"></span></h2>
+    <div id="errbox"></div>
+    <div class="row" style="margin-bottom:12px">
+      <button class="btn" id="run">Classify queue</button>
+      <button class="btn q" id="acceptAll" disabled>Accept all ready</button>
+      <button class="btn q" id="reset">Reset</button>
+      <span class="ch" id="prog"></span>
+    </div>
+    <div id="tbl"></div>
+  </div>
+
+  <p class="foot">
+    Classification reasons against the query, request and complaint definitions and illustrative examples published in a commercial bank's Grievance Redressal Policy (April 2026). The response timeline is not produced by the model: the model identifies the transaction type from a fixed list, and the timeline is looked up in code from the policy's schedule of timeframes. Interactions are constructed from that policy's illustrative examples. Portfolio prototype; not connected to any bank system, and no customer data is used.
+  </p>
+</div>
+
+<script>
+/* ---- deterministic timeline lookup: policy schedule, not model output ---- */
+const TAT = {
+  atm_bna:            { days: 5,   label: "T+5 days",  basis: "Failed ATM, BNA or recycler transaction" },
+  imps_upi:           { days: 1,   label: "T+1 day",   basis: "Failed IMPS or UPI credit" },
+  card_to_card:       { days: 1,   label: "T+1 day",   basis: "Failed card transaction, card to card" },
+  pos_ecom_failed:    { days: 5,   label: "T+5 days",  basis: "Failed card transaction, POS or ecommerce" },
+  aeps:               { days: 5,   label: "T+5 days",  basis: "Failed Aadhaar enabled payment system" },
+  apbs:               { days: 1,   label: "T+1 day",   basis: "Failed Aadhaar payment bridge" },
+  nach:               { days: 1,   label: "T+1 day",   basis: "Failed NACH" },
+  ppi_onus:           { days: 1,   label: "T+1 day",   basis: "Prepaid instrument, on-us, debited but unconfirmed" },
+  unauthorised:       { days: 90,  label: "90 days",   basis: "Fraudulent or unauthorised electronic banking transaction" },
+  pos_dispute:        { days: 120, label: "120 days",  basis: "POS or online dispute, non-fraud" },
+  neft_rtgs:          { days: 15,  label: "T+15 days", basis: "NEFT or RTGS" },
+  none:               { days: 10,  label: "10 days",   basis: "Level 1 default for all other interactions" }
+};
+
+
+/* ---- overnight queue: constructed from the policy's illustrative examples ---- */
+const QUEUE = [
+  { ch: "Email", text: "Please share the interest rate applicable on your 2-year fixed deposit and whether senior citizens get an additional rate." },
+  { ch: "Support portal", self: "Query", text: "I withdrew 5,000 at the ATM on Sunday. No cash came out but my account was debited. Kindly look into this." },
+  { ch: "Phone banking", text: "Customer transferred 12,000 by UPI to her son yesterday evening. Her account was debited but the money has not reached his account." },
+  { ch: "Email", text: "Kindly change my registered mobile number on the account to the one from which I am writing." },
+  { ch: "Phone banking", text: "Customer asks why a quarterly maintenance charge of 590 appears on the statement and what the fee covers." },
+  { ch: "Branch walk-in", text: "The 590 maintenance charge was levied even though my account held the required minimum balance through the whole quarter. It should not have been applied." },
+  { ch: "Email", text: "Please reverse the 590 maintenance charge and refund it to my account." },
+  { ch: "Support portal", self: "Complaint", text: "What are the daily transaction limits on the mobile banking app for UPI and IMPS?" },
+  { ch: "Branch letter", text: "Submitted address change form at branch, nine days now, nothing done, no one picks the phone, very poor" },
+  { ch: "Email", text: "I want to know the status of the address change request I submitted last week and by when it will reflect." },
+  { ch: "Social media", text: "Third time this month the net banking login fails after OTP. Nobody at the helpline can tell me why. Fix it." },
+  { ch: "Phone banking", text: "Customer wants a duplicate account statement for the last financial year for tax filing." },
+  { ch: "Support portal", self: "Request", text: "Someone used my card for a transaction of 18,400 in Delhi on the 3rd. I was not in Delhi and I did not authorise this." },
+  { ch: "Branch letter", text: "regarding my account the amount was not [illegible] since March please do the needful at the earliest" }
+];
+
+let items = [], busy = false;
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function init(){
+  items = QUEUE.map((q,i)=>({
+    id:i, ref:"INT-"+(2640+i), ch:q.ch, self:q.self||null, text:q.text,
+    state:"pending", r:null, logged:null, override:null, open:false
+  }));
+  render();
+}
+
+function tier(it){
+  if(!it.r) return null;
+  if(it.r.insufficient_detail) return {k:"thin", label:"Insufficient detail"};
+  if(it.r.ambiguous) return {k:"review", label:"Needs review"};
+  if(it.self && it.r.self_mismatch) return {k:"disp", label:"Customer selection disputed"};
+  return {k:"ready", label:"Ready to log"};
+}
+
+function timelineFor(it){
+  if(!it.r) return null;
+  const cat = it.logged || it.r.category;
+  if(cat === "Query") return { label:"None", basis:"A query carries no response obligation." };
+  const t = TAT[it.r.transaction_type] || TAT.none;
+  return { label:t.label, basis:t.basis };
+}
+
+function render(){
+  const done = items.filter(i=>i.r);
+  const logged = items.filter(i=>i.logged);
+  const counts = {Query:0,Request:0,Complaint:0};
+  done.forEach(i=>{ const c = i.logged || i.r.category; if(counts[c]!==undefined) counts[c]++; });
+  const needing = done.filter(i=>!i.logged && ["review","disp","thin"].includes(tier(i).k)).length;
+  const ready = done.filter(i=>!i.logged && tier(i).k==="ready").length;
+
+  $("stats").innerHTML = `
+    <div class="stat n"><b>${items.length}</b><span>In the queue</span></div>
+    <div class="stat q"><b>${counts.Query}</b><span>Query</span></div>
+    <div class="stat r"><b>${counts.Request}</b><span>Request</span></div>
+    <div class="stat c"><b>${counts.Complaint}</b><span>Complaint</span></div>
+    <div class="stat w"><b>${needing}</b><span>Stopped for you</span></div>`;
+
+  const tot = counts.Query+counts.Request+counts.Complaint;
+  $("mix").innerHTML = tot ? `
+    <i style="width:${counts.Query/tot*100}%;background:var(--query)"></i>
+    <i style="width:${counts.Request/tot*100}%;background:var(--request)"></i>
+    <i style="width:${counts.Complaint/tot*100}%;background:var(--complaint)"></i>` : "";
+
+  $("qmeta").textContent = done.length ? `${done.length} of ${items.length} classified · ${logged.length} logged` : `${items.length} interactions received overnight`;
+  $("acceptAll").disabled = busy || ready === 0;
+  $("acceptAll").textContent = ready ? `Accept ${ready} ready` : "Accept all ready";
+
+  $("tbl").innerHTML = `<table><thead><tr>
+      <th style="width:82px">Reference</th><th>Interaction</th><th style="width:112px">Channel</th>
+      <th style="width:150px">Classification</th><th style="width:104px">Timeline</th>
+      <th style="width:168px">Status</th></tr></thead>
+    <tbody>${items.map(rowHTML).join("")}</tbody></table>`;
+
+  items.forEach(it=>{
+    const b = document.getElementById("exp"+it.id);
+    if(b) b.onclick = ()=>{ it.open=!it.open; render(); };
+    const a = document.getElementById("acc"+it.id);
+    if(a) a.onclick = ()=>{ it.logged = it.r.category; it.open=false; render(); };
+    const o = document.getElementById("ovr"+it.id);
+    if(o) o.onclick = ()=>{ it.ovrForm = true; render(); };
+    const g = document.getElementById("ovrgo"+it.id);
+    if(g) g.onclick = ()=>{
+      const c = document.getElementById("ovrcat"+it.id).value;
+      const w = document.getElementById("ovrwhy"+it.id).value.trim();
+      if(!w){ document.getElementById("ovrwhy"+it.id).focus(); return; }
+      it.logged = c; it.override = w; it.ovrForm = false; it.open = false; render();
+    };
+  });
+}
+
+function rowHTML(it){
+  const t = tier(it), tl = timelineFor(it);
+  const cat = it.logged || (it.r ? it.r.category : null);
+  const stopped = t && !it.logged && t.k !== "ready";
+
+  let status;
+  if(it.logged) status = `<span class="tag done">Logged${it.override?" · overridden":""}</span>`;
+  else if(!it.r) status = `<span class="pend">${busy?"…":"Not classified"}</span>`;
+  else status = `<span class="tag ${t.k}">${t.label}</span>`;
+
+  let main = `<tr class="${stopped?"rev":""}">
+    <td class="ref">${esc(it.ref)}</td>
+    <td class="txt">${esc(it.text)}${it.self?`<span class="rc">Customer selected: ${esc(it.self)}</span>`:""}</td>
+    <td class="ch">${esc(it.ch)}</td>
+    <td>${cat?`<span class="cat ${cat}">${cat}</span><span class="rc">${esc(it.r.reason_code)}</span>`:'<span class="pend">—</span>'}</td>
+    <td class="tat">${tl?esc(tl.label):'<span class="pend">—</span>'}</td>
+    <td>${status}${it.r?`<br><button class="btn q sm" id="exp${it.id}" style="margin-top:6px">${it.open?"Hide":"Why"}</button>`:""}</td>
+  </tr>`;
+
+  if(it.r && it.open){
+    const cats = ["Query","Request","Complaint"].filter(c=>c!==it.r.category);
+    main += `<tr><td colspan="6" style="padding-top:0"><div class="exp">
+      <h4>WHY</h4><p class="why">${esc(it.r.reasoning)}</p>
+      <h4>DEFINITION MET</h4><p class="cite">${esc(it.r.definition_basis)}</p>
+      ${it.r.nearest_example?`<h4>CLOSEST EXAMPLE IN THE POLICY</h4><p class="cite">${esc(it.r.nearest_example)}</p>`:""}
+      <h4>TIMELINE</h4><p class="cite">${esc(tl.basis)}</p>
+      ${it.r.ambiguous?`<h4>WHY IT STOPPED</h4><p class="why">${esc(it.r.ambiguity_reason||"")}${it.r.competing_category?" Competing category: "+esc(it.r.competing_category)+".":""}</p>`:""}
+      ${it.r.insufficient_detail?`<h4>WHAT IS MISSING</h4><p class="why">${esc(it.r.missing_detail||"")}</p>`:""}
+      ${it.self&&it.r.self_mismatch?`<h4>DIFFERS FROM THE CUSTOMER'S SELECTION</h4><p class="why">The customer chose ${esc(it.self)}. ${esc(it.r.mismatch_note||"")}</p>`:""}
+      ${it.override?`<h4>OVERRIDE REASON</h4><p class="why">${esc(it.override)}</p>`:""}
+      ${!it.logged?`<div class="row" style="margin-top:11px">
+        <button class="btn sm" id="acc${it.id}">Log as ${it.r.category}</button>
+        <button class="btn q sm" id="ovr${it.id}">Log a different category</button></div>`:""}
+      ${it.ovrForm?`<div style="margin-top:11px;max-width:420px">
+        <select id="ovrcat${it.id}" style="margin-bottom:7px">${cats.map(c=>`<option>${c}</option>`).join("")}</select>
+        <textarea id="ovrwhy${it.id}" rows="2" placeholder="Reason, kept with the record."></textarea>
+        <button class="btn sm" id="ovrgo${it.id}" style="margin-top:7px">Log override</button></div>`:""}
+    </div></td></tr>`;
+  }
+  return main;
+}
+
+async function classifyOne(it){
+  const res = await fetch("/api/classify",{
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ text: it.text, channel: it.ch, self: it.self })
+  });
+  if(!res.ok){
+    let msg = "Request failed";
+    try { msg = (await res.json()).error || msg; } catch {}
+    throw new Error(msg);
+  }
+  return await res.json();
+}
+
+$("run").onclick = async ()=>{
+  if(busy) return;
+  busy = true; $("run").disabled = true; $("errbox").innerHTML = "";
+  const todo = items.filter(i=>!i.r);
+  let done = 0, failed = 0;
+  const tick = ()=>{ $("prog").innerHTML = `<span class="spin">◠</span> ${done} of ${todo.length} classified`; };
+  tick();
+
+  const pool = 3;
+  const queue = todo.slice();
+  await Promise.all(Array.from({length:pool},async()=>{
+    while(queue.length){
+      const it = queue.shift();
+      try { it.r = await classifyOne(it); }
+      catch(e){ failed++; }
+      done++; tick(); render();
+    }
+  }));
+
+  busy = false; $("run").disabled = false;
+  $("prog").textContent = failed ? `${done-failed} classified, ${failed} failed` : `${done} classified`;
+  if(failed) $("errbox").innerHTML = `<div class="err">${failed} interaction${failed>1?"s":""} could not be classified. Select Classify queue again to retry those.</div>`;
+  render();
+};
+
+$("acceptAll").onclick = ()=>{
+  items.forEach(it=>{ if(it.r && !it.logged && tier(it).k==="ready") it.logged = it.r.category; });
+  render();
+};
+$("reset").onclick = ()=>{ $("prog").textContent=""; $("errbox").innerHTML=""; init(); };
+
+init();
+</script>
+
+</body></html>
