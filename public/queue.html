@@ -5,11 +5,7 @@
 <title>Morning queue — Deskside Assist</title>
 <style>html,body{margin:0;padding:0;background:#E3E7EA}</style>
 </head><body>
-<div style="max-width:1180px;margin:0 auto;padding:14px 18px 0;font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:13px">
-  <a href="/" style="color:#5D6772;text-decoration:none">Deskside Assist</a>
-  <span style="color:#C7CED4"> / </span><a href="/queue.html" style="color:#5D6772;text-decoration:none">Morning queue</a>
-  <span style="color:#C7CED4"> / </span><a href="/case.html" style="color:#5D6772;text-decoration:none">Single case</a>
-</div>
+<div style="background:#fff;border-bottom:1px solid #C7CED4"><div style="max-width:1400px;margin:0 auto;padding:11px 20px;font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:13px"><a href="/" style="color:#5D6772;text-decoration:none">Overview</a><span style="color:#C7CED4;margin:0 9px">/</span><span style="color:#121A20;font-weight:600">Morning queue</span><span style="color:#C7CED4;margin:0 9px">/</span><a href="/case.html" style="color:#5D6772;text-decoration:none">Single case</a></div></div>
 <style>
   :root{
     --ground:#E3E7EA; --surface:#FFF; --ink:#121A20; --muted:#5D6772; --faint:#8A939C;
@@ -20,13 +16,13 @@
   *{box-sizing:border-box}
   .gic{background:var(--ground);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5;padding:18px}
   .hd{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-bottom:11px;border-bottom:1px solid var(--rule);margin-bottom:14px;flex-wrap:wrap}
-  .hd h1{font-size:16.5px;font-weight:600;margin:0;letter-spacing:-.01em}
+  .hd h1{font-size:22px;font-weight:700;margin:0;letter-spacing:-.02em}
   .hd p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
   .who{font-size:12.5px;color:var(--muted);text-align:right}
   .who strong{color:var(--ink);font-weight:600}
 
   .panel{background:var(--surface);border:1px solid var(--rule);border-radius:2px;padding:15px;margin-bottom:14px}
-  .panel h2{font-size:13px;font-weight:600;margin:0 0 12px;padding-bottom:7px;border-bottom:1px solid var(--soft);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .panel h2{font-size:15px;font-weight:700;margin:0 0 13px;padding-bottom:9px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .panel h2 span{font-weight:400;color:var(--muted);font-size:12px}
 
   .btn{font-family:inherit;font-size:13.5px;border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:2px;padding:8px 15px;cursor:pointer;font-weight:500}
@@ -42,7 +38,7 @@
   @media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}}
   .stat{background:var(--surface);border:1px solid var(--rule);border-radius:2px;padding:11px 13px}
   .stat b{display:block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:23px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
-  .stat span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+  .stat span{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-top:3px}
   .stat.q b{color:var(--query)} .stat.r b{color:var(--request)} .stat.c b{color:var(--complaint)}
   .stat.w b{color:var(--flag)} .stat.n b{color:var(--ink)}
 
@@ -51,7 +47,7 @@
   .mix i{display:block;height:100%}
 
   table{width:100%;border-collapse:collapse;font-size:13px}
-  th{text-align:left;font-weight:600;font-size:12px;color:var(--muted);padding:0 9px 6px 0;border-bottom:1px solid var(--rule);white-space:nowrap}
+  th{text-align:left;font-weight:700;font-size:12.5px;color:var(--ink);padding:0 9px 6px 0;border-bottom:1px solid var(--rule);white-space:nowrap}
   td{padding:9px 9px 9px 0;border-bottom:1px solid var(--soft);vertical-align:top}
   tr.rev{background:#FDFAF3}
   .ref{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--muted);white-space:nowrap}
@@ -71,7 +67,7 @@
   .tag.done{background:#E9EDEF;color:var(--muted)}
 
   .exp{background:#F7F9FA;border-left:2px solid var(--rule);padding:10px 13px;margin:2px 0 4px;font-size:13px}
-  .exp h4{margin:0 0 3px;font-size:11.5px;color:var(--muted);font-weight:600}
+  .exp h4{margin:0 0 4px;font-size:11.5px;color:var(--ink);font-weight:700;letter-spacing:.3px}
   .exp p{margin:0 0 9px}
   .exp p:last-of-type{margin-bottom:0}
   .exp .why{color:var(--ink)}
@@ -89,7 +85,7 @@
 <div class="gic">
   <div class="hd">
     <div>
-      <h1>Deskside Assist</h1>
+      <h1>Morning queue</h1>
       <p>The overnight queue, classified against the bank’s own policy before the shift starts.</p>
     </div>
     <div class="who"><strong>Gayathri D.</strong><br>Officer, Customer Care &middot; Virtual Care</div>
@@ -286,24 +282,35 @@ $("run").onclick = async ()=>{
   if(busy) return;
   busy = true; $("run").disabled = true; $("errbox").innerHTML = "";
   const todo = items.filter(i=>!i.r);
-  let done = 0, failed = 0;
-  const tick = ()=>{ $("prog").innerHTML = `<span class="spin">◠</span> ${done} of ${todo.length} classified`; };
+  let done = 0, failed = 0, lastErr = "";
+
+  const wait = ms => new Promise(r=>setTimeout(r, ms));
+  const tick = ()=>{
+    $("prog").innerHTML = `<span class="spin">\u25e0</span> Reading interaction ${Math.min(done+1, todo.length)} of ${todo.length}`;
+  };
   tick();
 
-  const pool = 3;
-  const queue = todo.slice();
-  await Promise.all(Array.from({length:pool},async()=>{
-    while(queue.length){
-      const it = queue.shift();
-      try { it.r = await classifyOne(it); }
-      catch(e){ failed++; }
-      done++; tick(); render();
+  // One at a time, with a short pause. Free API tiers cap requests per minute,
+  // and firing them in parallel trips that cap.
+  for (const it of todo){
+    let ok = false;
+    for (let attempt = 0; attempt < 3 && !ok; attempt++){
+      try {
+        it.r = await classifyOne(it);
+        ok = true;
+      } catch(e){
+        lastErr = e.message || "";
+        if (attempt < 2) await wait(1500 * (attempt + 1));
+      }
     }
-  }));
+    if(!ok) failed++;
+    done++; tick(); render();
+    await wait(350);
+  }
 
   busy = false; $("run").disabled = false;
-  $("prog").textContent = failed ? `${done-failed} classified, ${failed} failed` : `${done} classified`;
-  if(failed) $("errbox").innerHTML = `<div class="err">${failed} interaction${failed>1?"s":""} could not be classified. Select Classify queue again to retry those.</div>`;
+  $("prog").textContent = failed ? `${done-failed} classified, ${failed} could not be read` : `${done} classified`;
+  if(failed) $("errbox").innerHTML = `<div class="err"><b>${failed} interaction${failed>1?"s":""} could not be classified.</b> Select Classify queue again to retry those.${lastErr?`<br><span style="color:var(--muted);font-size:12px">${esc(lastErr).slice(0,220)}</span>`:""}</div>`;
   render();
 };
 
