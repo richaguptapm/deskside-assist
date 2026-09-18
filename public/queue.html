@@ -286,7 +286,7 @@ $("run").onclick = async ()=>{
 
   const wait = ms => new Promise(r=>setTimeout(r, ms));
   const tick = ()=>{
-    $("prog").innerHTML = `<span class="spin">\u25e0</span> Reading interaction ${Math.min(done+1, todo.length)} of ${todo.length} \u00b7 paced to stay inside the API rate limit`;
+    $("prog").innerHTML = `<span class="spin">\u25e0</span> Reading interaction ${Math.min(done+1, todo.length)} of ${todo.length}`;
   };
   tick();
 
@@ -300,12 +300,12 @@ $("run").onclick = async ()=>{
         ok = true;
       } catch(e){
         lastErr = e.message || "";
-        if (attempt < 2) await wait(4000 * (attempt + 1));
+        if (attempt < 2) await wait(1500 * (attempt + 1));
       }
     }
     if(!ok) failed++;
     done++; tick(); render();
-    await wait(2000);
+    await wait(350);
   }
 
   busy = false; $("run").disabled = false;
