@@ -1,75 +1,241 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Deskside Assist</title>
-<style>
-  :root{--ink:#121A20;--muted:#5D6772;--faint:#8A939C;--rule:#C7CED4;--soft:#DDE2E6;
-        --query:#4A5560;--request:#1F5F8B;--complaint:#9E2A3C}
-  *{box-sizing:border-box}
-  body{margin:0;background:#E3E7EA;color:var(--ink);
-       font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-       font-size:15px;line-height:1.6}
-  .wrap{max-width:760px;margin:0 auto;padding:46px 22px 60px}
-  h1{font-size:30px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
-  .lede{font-size:17px;color:#2B3742;margin:0 0 26px;line-height:1.5}
-  .bar{display:flex;height:8px;border-radius:2px;overflow:hidden;margin:0 0 30px;max-width:300px}
-  .bar i{flex:1}
-  h2{font-size:15px;font-weight:600;margin:30px 0 8px}
-  p{margin:0 0 13px}
-  .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0 8px}
-  @media(max-width:640px){.cards{grid-template-columns:1fr}}
-  a.card{display:block;background:#fff;border:1px solid var(--rule);border-radius:2px;
-         padding:18px;text-decoration:none;color:inherit}
-  a.card:hover{border-color:var(--ink)}
-  a.card b{display:block;font-size:16px;font-weight:600;margin-bottom:5px}
-  a.card span{color:var(--muted);font-size:14px}
-  .note{background:#fff;border:1px solid var(--rule);border-left:3px solid var(--ink);
-        border-radius:2px;padding:15px 17px;margin:24px 0;font-size:14px;color:#2B3742}
-  .note b{display:block;margin-bottom:4px}
-  footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--rule);
-         font-size:12.5px;color:var(--faint);line-height:1.7}
-</style>
-</head><body>
-<div class="wrap">
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmbudsShield AI — Regulatory Grievance Triage</title>
+  <style>
+    :root {
+      --bg: #eef2f6;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --primary: #0284c7;
+      --border: #cbd5e1;
+      --accent-gray: #475569;
+      --accent-blue: #0284c7;
+      --accent-red: #b91c1c;
+    }
 
-  <h1>Deskside Assist</h1>
-  <p class="lede">The first pass on every customer complaint, before it enters the bank's system.</p>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  <div class="bar">
-    <i style="background:var(--query)"></i>
-    <i style="background:var(--request)"></i>
-    <i style="background:var(--complaint)"></i>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* Header styling */
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .subhead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      margin-bottom: 18px;
+    }
+
+    /* Tri-color regulatory accent bar */
+    .accent-bar {
+      display: flex;
+      height: 4px;
+      width: 100%;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .bar-gray { background-color: var(--accent-gray); width: 33.33%; }
+    .bar-blue { background-color: var(--accent-blue); width: 33.33%; }
+    .bar-red  { background-color: var(--accent-red);  width: 33.34%; }
+
+    /* Crisp 3-Point Executive Summary (Replaces the essay) */
+    .summary-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .summary-card ul {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .summary-card li {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .summary-card li strong {
+      color: #0f172a;
+      min-width: 175px;
+    }
+
+    /* The 2 Primary Navigation Cards */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .action-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .action-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 22px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.15s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .action-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title::after {
+      content: "→";
+      color: var(--primary);
+      font-size: 1.2rem;
+      font-weight: 400;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Trust / Verification Banner */
+    .trust-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-left: 4px solid #10b981;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 30px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .trust-card strong {
+      color: #0f172a;
+    }
+
+    /* Clean 1-Line Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+      font-size: 0.8rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>OmbudsShield AI</h1>
+      <p class="subhead">Regulatory Grievance Triage for Scheduled Commercial Banks</p>
+      
+      <div class="accent-bar">
+        <div class="bar-gray" title="Query: Informational"></div>
+        <div class="bar-blue" title="Request: Service SLA"></div>
+        <div class="bar-red" title="Complaint: Statutory 30-Day Clock"></div>
+      </div>
+    </header>
+
+    <!-- Concise Executive Summary (Replaces the 4 paragraphs of text bloat) -->
+    <div class="summary-card">
+      <ul>
+        <li>
+          <strong>The Intake Problem:</strong>
+          <span>Frontline care officers have seconds to file incoming customer interactions under one of three headings: <em>Query</em>, <em>Request</em>, or <em>Complaint</em>.</span>
+        </li>
+        <li>
+          <strong>The Regulatory Risk:</strong>
+          <span>A complaint misfiled as a query never starts the statutory 30-day clock under <strong>RB-IOS 2026</strong>. It disappears from records until escalated to the RBI Ombudsman.</span>
+        </li>
+        <li>
+          <strong>The Solution:</strong>
+          <span>Real-time semantic triage grounded in <strong>Axis Bank SOP (Sept 2026)</strong> with deterministic deadline calculations and zero model arithmetic.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- The 2 Primary Action Workflows -->
+    <div class="action-grid">
+      <a href="queue.html" class="action-card">
+        <div class="card-title">Batch Queue Intake</div>
+        <div class="card-desc">
+          Asynchronous triage for 14 accumulated off-hours tickets. 1-click batch files verified cases; isolates doubtful edge cases for human review.
+        </div>
+      </a>
+
+      <a href="case.html" class="action-card">
+        <div class="card-title">Single-Case Triage</div>
+        <div class="card-desc">
+          Real-time decision support for active customer interactions across Branch, Phone, Email, Chat, and Web Portal.
+        </div>
+      </a>
+    </div>
+
+    <!-- Proof of Real AI (Concise) -->
+    <div class="trust-card">
+      <strong>Live Inference Engine:</strong> Every interaction is evaluated in real time using a hosted language model grounded in published bank definitions. No canned keyword matching; supports unique and unscripted customer phrasing.
+    </div>
+
+    <!-- Clean 1-Line Footer -->
+    <footer>
+      Portfolio prototype grounded in Axis Bank Grievance Redressal Policy (September 2026) and the Reserve Bank - Integrated Ombudsman Scheme (RB-IOS, 2026).
+    </footer>
   </div>
 
-  <p>Contact an Indian bank with a problem and someone files what you said under one of three headings: a query, a request or a complaint. It takes seconds and is usually done from memory.</p>
-
-  <p>That choice decides what the bank owes you. A query is a question, so nothing is owed and no deadline starts. A request has a deadline. A complaint has a deadline, an acknowledgement, and a review.</p>
-
-  <p>So a complaint filed as a query disappears. The Governor of the Reserve Bank of India has called this a gross regulatory violation, not a clerical slip.</p>
-
-  <p>Deskside Assist is for the officer making that call. It reads what the customer said and tells her which of the three it is. It shows her where the policy says so. It works out the deadline. When the wording could go either way, it says so and lets her decide.</p>
-
-  <div class="cards">
-    <a class="card" href="/queue.html">
-      <b>Morning queue</b>
-      <span>Fourteen interactions that came in overnight. Classify them all in one click, then work only the ones that stopped.</span>
-    </a>
-    <a class="card" href="/case.html">
-      <b>Single case</b>
-      <span>One interaction at a time. Type anything a customer might say and see how it is classified.</span>
-    </a>
-  </div>
-
-  <div class="note">
-    <b>The classification is real.</b>
-    Every case is read by a language model at the moment you click, against the bank's published definitions. Nothing is pre-classified or keyword-matched, so anything you type will be classified on its own terms — including wording that has never been seen before.
-  </div>
-
-  
-  <footer>
-    A portfolio prototype. Not connected to any bank system. Every customer message here is written by me, based on the illustrative examples published in a commercial bank's Grievance Redressal Policy; no real customer communication has been used, and none was available to me. Bank names appear in the accompanying document only as citations for documents those banks publish.
-  </footer>
-
-</div>
-</body></html>
+</body>
+</html>
