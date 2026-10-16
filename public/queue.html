@@ -3,25 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Batch Queue Intake — OmbudsShield AI</title>
+  <title>OmbudsShield AI — Morning queue</title>
   <style>
     :root {
-      --bg: #f8fafc;
+      --bg: #eef2f6;
       --card-bg: #ffffff;
       --text-main: #0f172a;
       --text-muted: #64748b;
-      --border: #e2e8f0;
+      --border: #cbd5e1;
       --primary: #0284c7;
       --query: #0284c7;
-      --request: #10b981;
-      --complaint: #e11d48;
-      --amber: #f59e0b;
+      --request: #059669;
+      --complaint: #b91c1c;
+      --amber: #d97706;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
+    /* Unified typography: clean modern sans-serif */
+    body, h1, h2, h3, p, div, span, a, button, table, th, td {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
       background-color: var(--bg);
       color: var(--text-main);
       padding: 24px 32px;
@@ -32,53 +36,64 @@
     .top-nav {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 18px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
-    }
-
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      margin-right: 12px;
-    }
-
-    .nav-links a.active {
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    .officer-badge {
-      font-weight: 500;
-      color: #334155;
-    }
-
-    /* Page Header */
-    h1 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    .subtitle {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 4px;
       margin-bottom: 20px;
     }
 
-    /* Top Metrics Bar (Now with ~35m Triage Time Saved) */
+    .nav-links a {
+      color: #64748b;
+      text-decoration: none;
+      margin-right: 14px;
+    }
+
+    .nav-links a.active {
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .officer-badge {
+      text-align: right;
+      font-size: 0.85rem;
+      color: #334155;
+    }
+    .officer-badge strong {
+      display: block;
+      color: #0f172a;
+      font-size: 0.9rem;
+    }
+    .officer-badge span {
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    /* Header */
+    header {
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+    }
+
+    .subtitle {
+      font-size: 0.88rem;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    /* Original 5-Counter Bar */
     .metrics-bar {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 12px;
       margin-bottom: 24px;
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 900px) {
       .metrics-bar { grid-template-columns: repeat(3, 1fr); }
     }
 
@@ -87,48 +102,52 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 12px 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
 
     .metric-num {
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       font-weight: 700;
       line-height: 1.2;
     }
 
     .metric-label {
       font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-muted);
-      margin-top: 4px;
+      color: #64748b;
+      margin-top: 3px;
     }
 
     .num-queue { color: #0f172a; }
     .num-query { color: var(--query); }
     .num-request { color: var(--request); }
     .num-complaint { color: var(--complaint); }
-    .num-amber { color: var(--amber); }
-    .num-saved { color: #059669; }
+    .num-stopped { color: var(--amber); }
 
-    /* Action Toolbar */
+    /* Section Subhead & Actions Toolbar */
+    .queue-header {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
     .toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .btn-group {
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
 
     button {
-      font-family: inherit;
       font-size: 0.85rem;
       font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 6px;
+      padding: 7px 14px;
+      border-radius: 5px;
       cursor: pointer;
       transition: all 0.15s ease;
     }
@@ -145,14 +164,15 @@
       color: #0f172a;
       border: 1px solid var(--border);
     }
-    .btn-secondary:hover { background: #f1f5f9; }
+    .btn-secondary:hover { background: #f8fafc; }
+    .btn-secondary:disabled { color: #94a3b8; cursor: not-allowed; }
 
-    .queue-count-text {
-      font-size: 0.85rem;
-      color: var(--text-muted);
+    .queue-info {
+      font-size: 0.8rem;
+      color: #64748b;
     }
 
-    /* Clean Table Styling */
+    /* Table Container */
     .table-container {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -164,7 +184,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.86rem;
+      font-size: 0.85rem;
       text-align: left;
     }
 
@@ -175,12 +195,11 @@
       color: #475569;
       border-bottom: 1px solid var(--border);
       font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
     }
 
     td {
-      padding: 12px 14px;
+      padding: 11px 14px;
       border-bottom: 1px solid var(--border);
       vertical-align: top;
     }
@@ -191,99 +210,122 @@
     .ref-cell {
       font-family: monospace;
       font-size: 0.8rem;
-      color: var(--text-muted);
+      color: #64748b;
       white-space: nowrap;
     }
 
     .text-cell {
       max-width: 480px;
+      color: #1e293b;
     }
 
     .cust-tag {
-      display: inline-block;
-      font-size: 0.72rem;
+      font-size: 0.74rem;
       color: #64748b;
-      margin-top: 4px;
+      margin-top: 3px;
       font-style: italic;
     }
 
-    .channel-tag {
-      font-size: 0.78rem;
+    .channel-cell {
+      font-size: 0.8rem;
       color: #475569;
       white-space: nowrap;
     }
 
-    /* Classification Badges */
+    /* Badges */
     .badge {
       display: inline-block;
-      padding: 3px 8px;
+      padding: 2px 7px;
       border-radius: 4px;
       font-weight: 600;
       font-size: 0.75rem;
-      text-transform: uppercase;
     }
 
     .badge-query { background: #e0f2fe; color: #0369a1; }
     .badge-request { background: #dcfce7; color: #15803d; }
     .badge-complaint { background: #ffe4e6; color: #be123c; }
 
-    /* Status Badges */
-    .status-pill {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-weight: 500;
-      font-size: 0.75rem;
-      white-space: nowrap;
+    .status-text {
+      font-size: 0.8rem;
     }
 
-    .status-unclassified { color: #94a3b8; }
-    .status-ready { background: #dcfce7; color: #166534; }
-    .status-amber { background: #fef3c7; color: #92400e; font-weight: 600; }
-    .status-filed { background: #f1f5f9; color: #475569; }
+    .status-not-classified {
+      color: #94a3b8;
+      font-style: italic;
+    }
 
-    .edge-reason {
+    .status-ready {
+      color: #15803d;
+      font-weight: 500;
+    }
+
+    .status-stopped {
+      color: #b45309;
+      font-weight: 600;
+    }
+
+    .status-accepted {
+      color: #475569;
+    }
+
+    .edge-note {
       display: block;
       font-size: 0.72rem;
-      color: #b45309;
+      color: #92400e;
       margin-top: 3px;
     }
 
-    /* Minimal 1-Line Footer */
+    /* Footer */
     footer {
       margin-top: 24px;
-      padding-top: 12px;
+      padding-top: 14px;
       border-top: 1px solid var(--border);
       font-size: 0.78rem;
-      color: #94a3b8;
+      color: #64748b;
+      line-height: 1.5;
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .footer-left {
+      max-width: 780px;
+    }
+
+    .footer-right {
+      white-space: nowrap;
+      font-weight: 600;
+      color: #334155;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation -->
+  <!-- Top Nav -->
   <div class="top-nav">
     <div class="nav-links">
       <a href="index.html">Overview</a>
-      <a href="queue.html" class="active">Batch Queue Intake</a>
-      <a href="case.html">Single-Case Triage</a>
+      <a href="queue.html" class="active">Morning queue</a>
+      <a href="case.html">Single case</a>
     </div>
-    <div class="officer-badge">Customer Care Officer: Gayathri D. | Virtual Care Unit</div>
+    <div class="officer-badge">
+      <strong>Gayathri D.</strong>
+      <span>Customer Care Officer · Virtual Care Unit</span>
+    </div>
   </div>
 
   <!-- Header -->
   <header>
-    <h1>Batch Queue Intake</h1>
-    <p class="subtitle">Asynchronous triage for accumulated off-hours backlog (14 cases across Web Portal, Nodal Email, Mobile App, and Day-End Branch Scans).</p>
+    <h1>Morning queue</h1>
+    <p class="subtitle">The overnight queue, classified against the bank's own policy before the shift starts.</p>
   </header>
 
-  <!-- 6-Metric Executive Counter Bar -->
+  <!-- 5 Metric Cards (Restored from your screenshot) -->
   <div class="metrics-bar">
     <div class="metric-card">
       <div class="metric-num num-queue" id="count-total">14</div>
-      <div class="metric-label">In The Queue</div>
+      <div class="metric-label">In the queue</div>
     </div>
     <div class="metric-card">
       <div class="metric-num num-query" id="count-query">0</div>
@@ -298,23 +340,20 @@
       <div class="metric-label">Complaint</div>
     </div>
     <div class="metric-card">
-      <div class="metric-num num-amber" id="count-stopped">0</div>
-      <div class="metric-label">Needs Review</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-num num-saved" id="count-saved">—</div>
-      <div class="metric-label">Triage Time Saved</div>
+      <div class="metric-num num-stopped" id="count-stopped">0</div>
+      <div class="metric-label">Stopped for you</div>
     </div>
   </div>
 
-  <!-- Action Toolbar -->
+  <!-- Queue Subhead & Toolbar -->
+  <div class="queue-header">Queue</div>
   <div class="toolbar">
     <div class="btn-group">
-      <button class="btn-primary" id="btn-classify" onclick="runBatchTriage()">Run Batch Triage</button>
-      <button class="btn-secondary" id="btn-batch-file" onclick="batchFileReady()" disabled>1-Click Batch File (11 Verified)</button>
+      <button class="btn-primary" id="btn-classify" onclick="runClassification()">Classify queue</button>
+      <button class="btn-secondary" id="btn-accept" onclick="acceptAllReady()" disabled>Accept all ready</button>
       <button class="btn-secondary" onclick="resetQueue()">Reset</button>
     </div>
-    <div class="queue-count-text">14 interactions accumulated post-working hours</div>
+    <div class="queue-info">14 interactions received overnight</div>
   </div>
 
   <!-- Queue Table -->
@@ -323,7 +362,7 @@
       <thead>
         <tr>
           <th>Reference</th>
-          <th>Interaction Statement</th>
+          <th>Interaction</th>
           <th>Channel</th>
           <th>Classification</th>
           <th>Timeline</th>
@@ -331,42 +370,46 @@
         </tr>
       </thead>
       <tbody id="queue-body">
-        <!-- 14 Rows injected via JavaScript -->
+        <!-- Rows dynamically injected -->
       </tbody>
     </table>
   </div>
 
-  <!-- Clean 1-Line Footer -->
+  <!-- Footer -->
   <footer>
-    <span>Grounded in Axis Bank Grievance Redressal Policy (September 2026) and Reserve Bank - Integrated Ombudsman Scheme (2026).</span>
-    <span>Zero Model Arithmetic · Regex PII Sanitization</span>
+    <div class="footer-left">
+      Classification reasons against the query, request and complaint definitions and illustrative examples published in Axis Bank's Grievance Redressal Policy (September 2026). The response timeline is not produced by the model: the model identifies the transaction type from a fixed list, and the timeline is looked up in code from the policy's schedule of timeframes. Interactions are constructed from that policy's illustrative examples. Portfolio prototype; not connected to any bank system, and no customer data is used.
+    </div>
+    <div class="footer-right">
+      OmbudsShield AI
+    </div>
   </footer>
 
   <script>
-    // Universal API Path (Supports both Vercel /api/classify and Netlify /.netlify/functions/classify)
+    // Universal API Path (Supports Vercel /api/classify and Netlify /.netlify/functions/classify)
     const API_ENDPOINT = window.location.hostname.includes("netlify") ? "/.netlify/functions/classify" : "/api/classify";
 
-    // 14 Real-world banking cases
+    // 14 Original Interactions from your screenshot
     const queueData = [
-      { id: "INT-2640", text: "Please share the interest rate applicable on your 2-year fixed deposit and whether senior citizens get an additional rate.", channel: "Nodal Email", self: null, trueCat: "Query", tat: "Informational (No Clock)", edge: null },
-      { id: "INT-2641", text: "I withdrew 5,000 at the ATM on Sunday. No cash came out but my account was debited. Kindly look into this.", channel: "Support Portal", self: "Query", trueCat: "Complaint", tat: "Level 1: 10 Working Days", edge: "Form Mismatch: Customer ticked Query, but text alleges uncredited ATM debit." },
-      { id: "INT-2642", text: "Customer transferred 12,000 by UPI to her son yesterday evening. Her account was debited but the money has not reached his account.", channel: "Mobile App Dispute", self: null, trueCat: "Complaint", tat: "Level 1: 10 Working Days", edge: null },
-      { id: "INT-2643", text: "Kindly change my registered mobile number on the account to the one from which I am writing.", channel: "Nodal Email", self: null, trueCat: "Request", tat: "SLA: 3 Working Days", edge: null },
-      { id: "INT-2644", text: "Customer asks why a quarterly maintenance charge of 590 appears on the statement and what the fee covers.", channel: "Support Portal", self: null, trueCat: "Query", tat: "Informational (No Clock)", edge: null },
-      { id: "INT-2645", text: "The 590 maintenance charge was levied even though my account held the required minimum balance through the whole quarter. It should not have been applied.", channel: "Day-End Branch Scan", self: null, trueCat: "Complaint", tat: "Level 1: 10 Working Days", edge: null },
-      { id: "INT-2646", text: "Please reverse the 590 maintenance charge and refund it to my account.", channel: "Nodal Email", self: null, trueCat: "Request", tat: "SLA: 5 Working Days", edge: null },
-      { id: "INT-2647", text: "What are the daily transaction limits on the mobile banking app for UPI and IMPS?", channel: "Support Portal", self: "Complaint", trueCat: "Query", tat: "Informational (No Clock)", edge: null },
-      { id: "INT-2648", text: "Submitted address change form at branch, nine days now, nothing done, no one picks the phone, very poor service.", channel: "Day-End Branch Scan", self: null, trueCat: "Complaint", tat: "Level 1: 10 Working Days", edge: "Borderline Delay: Exceeded service SLA turns into Deficiency in Service." },
-      { id: "INT-2649", text: "I want to know the status of the address change request I submitted last week and by when it will reflect.", channel: "Nodal Email", self: null, trueCat: "Query", tat: "Informational (No Clock)", edge: null },
-      { id: "INT-2650", text: "Third time this month the net banking login fails after OTP. Nobody at the helpline can tell me why. Fix it.", channel: "Mobile App Dispute", self: null, trueCat: "Complaint", tat: "Level 1: 10 Working Days", edge: null },
-      { id: "INT-2651", text: "Customer wants a duplicate account statement for the last financial year for tax filing.", channel: "Support Portal", self: null, trueCat: "Request", tat: "SLA: 2 Working Days", edge: null },
-      { id: "INT-2652", text: "Someone used my card for a transaction of 18,400 in Delhi on the 3rd. I was not in Delhi and I did not authorise this.", channel: "Support Portal", self: "Request", trueCat: "Complaint", tat: "Level 1: 10 Working Days", edge: null },
-      { id: "INT-2653", text: "regarding my account the amount was not [illegible] since March please do the needful at the earliest", channel: "Day-End Branch Scan", self: null, trueCat: "Complaint", tat: "Awaiting Clarification", edge: "Insufficient Data: Smudged scan. Prompt customer for transaction date/details." }
+      { id: "INT-2640", text: "Please share the interest rate applicable on your 2-year fixed deposit and whether senior citizens get an additional rate.", channel: "Email", self: null, category: "Query", timeline: "Informational (No deadline)", edge: false, edgeNote: null },
+      { id: "INT-2641", text: "I withdrew 5,000 at the ATM on Sunday. No cash came out but my account was debited. Kindly look into this.", channel: "Support portal", self: "Query", category: "Complaint", timeline: "Level 1: 10 Working Days", edge: true, edgeNote: "Customer selected Query on portal, but message alleges uncredited ATM failure." },
+      { id: "INT-2642", text: "Customer transferred 12,000 by UPI to her son yesterday evening. Her account was debited but the money has not reached his account.", channel: "Phone banking", self: null, category: "Complaint", timeline: "Level 1: 10 Working Days", edge: false, edgeNote: null },
+      { id: "INT-2643", text: "Kindly change my registered mobile number on the account to the one from which I am writing.", channel: "Email", self: null, category: "Request", timeline: "SLA: 3 Working Days", edge: false, edgeNote: null },
+      { id: "INT-2644", text: "Customer asks why a quarterly maintenance charge of 590 appears on the statement and what the fee covers.", channel: "Phone banking", self: null, category: "Query", timeline: "Informational (No deadline)", edge: false, edgeNote: null },
+      { id: "INT-2645", text: "The 590 maintenance charge was levied even though my account held the required minimum balance through the whole quarter. It should not have been applied.", channel: "Branch walk-in", self: null, category: "Complaint", timeline: "Level 1: 10 Working Days", edge: false, edgeNote: null },
+      { id: "INT-2646", text: "Please reverse the 590 maintenance charge and refund it to my account.", channel: "Email", self: null, category: "Request", timeline: "SLA: 5 Working Days", edge: false, edgeNote: null },
+      { id: "INT-2647", text: "What are the daily transaction limits on the mobile banking app for UPI and IMPS?", channel: "Support portal", self: "Complaint", category: "Query", timeline: "Informational (No deadline)", edge: false, edgeNote: null },
+      { id: "INT-2648", text: "Submitted address change form at branch, nine days now, nothing done, no one picks the phone, very poor", channel: "Branch letter", self: null, category: "Complaint", timeline: "Level 1: 10 Working Days", edge: true, edgeNote: "The wording could go either way: Delay past service SLA turns into Deficiency in Service." },
+      { id: "INT-2649", text: "I want to know the status of the address change request I submitted last week and by when it will reflect.", channel: "Email", self: null, category: "Query", timeline: "Informational (No deadline)", edge: false, edgeNote: null },
+      { id: "INT-2650", text: "Third time this month the net banking login fails after OTP. Nobody at the helpline can tell me why. Fix it.", channel: "Social media", self: null, category: "Complaint", timeline: "Level 1: 10 Working Days", edge: false, edgeNote: null },
+      { id: "INT-2651", text: "Customer wants a duplicate account statement for the last financial year for tax filing.", channel: "Phone banking", self: null, category: "Request", timeline: "SLA: 2 Working Days", edge: false, edgeNote: null },
+      { id: "INT-2652", text: "Someone used my card for a transaction of 18,400 in Delhi on the 3rd. I was not in Delhi and I did not authorise this.", channel: "Support portal", self: "Request", category: "Complaint", timeline: "Level 1: 10 Working Days", edge: false, edgeNote: null },
+      { id: "INT-2653", text: "regarding my account the amount was not [illegible] since March please do the needful at the earliest", channel: "Branch letter", self: null, category: "Complaint", timeline: "Awaiting Clarification", edge: true, edgeNote: "There isn't enough to go on. Partially legible letter. Ask customer for transaction details." }
     ];
 
-    let classifiedState = false;
+    let isClassified = false;
 
-    function renderTable() {
+    function renderQueue() {
       const tbody = document.getElementById("queue-body");
       tbody.innerHTML = "";
 
@@ -379,17 +422,17 @@
             ${item.text}
             ${item.self ? `<div class="cust-tag">Customer selected: ${item.self}</div>` : ""}
           </td>
-          <td class="channel-tag">${item.channel}</td>
+          <td class="channel-cell">${item.channel}</td>
           <td>
-            ${classifiedState ? `<span class="badge badge-${item.trueCat.toLowerCase()}">${item.trueCat}</span>` : `<span class="status-unclassified">—</span>`}
+            ${isClassified ? `<span class="badge badge-${item.category.toLowerCase()}">${item.category}</span>` : `<span class="status-not-classified">—</span>`}
           </td>
           <td style="font-size:0.8rem; color:#475569;">
-            ${classifiedState ? item.tat : `—`}
+            ${isClassified ? item.timeline : `—`}
           </td>
-          <td>
-            ${!classifiedState ? `<span class="status-pill status-unclassified">Not Classified</span>` :
-              item.edge ? `<span class="status-pill status-amber">Requires Review</span><span class="edge-reason">${item.edge}</span>` :
-              `<span class="status-pill status-ready">✓ Ready to File</span>`
+          <td class="status-text">
+            ${!isClassified ? `<span class="status-not-classified">Not classified</span>` :
+              item.edge ? `<span class="status-stopped">Stopped for you</span><span class="edge-note">${item.edgeNote}</span>` :
+              `<span class="status-ready">Ready to file</span>`
             }
           </td>
         `;
@@ -397,61 +440,57 @@
       });
     }
 
-    function runBatchTriage() {
+    function runClassification() {
       const btn = document.getElementById("btn-classify");
-      btn.innerText = "Processing Triage...";
+      btn.innerText = "Classifying...";
       btn.disabled = true;
 
-      // Simulated fast inference (or live call fallback)
+      // Simulated instant/fallback triage
       setTimeout(() => {
-        classifiedState = true;
-        renderTable();
+        isClassified = true;
+        renderQueue();
 
-        // Update Top Metric Counters
+        // Update 5 Counters
         document.getElementById("count-query").innerText = "4";
         document.getElementById("count-request").innerText = "3";
         document.getElementById("count-complaint").innerText = "7";
         document.getElementById("count-stopped").innerText = "3";
-        document.getElementById("count-saved").innerText = "~35m";
 
-        btn.innerText = "Triage Complete";
-        document.getElementById("btn-batch-file").disabled = false;
-      }, 700);
+        btn.innerText = "Classified";
+        document.getElementById("btn-accept").disabled = false;
+      }, 600);
     }
 
-    function batchFileReady() {
+    function acceptAllReady() {
       const rows = document.querySelectorAll("#queue-body tr");
       queueData.forEach((item, idx) => {
         if (!item.edge) {
           const statusTd = rows[idx].querySelector("td:last-child");
-          statusTd.innerHTML = `<span class="status-pill status-filed">✓ Filed to CRM</span>`;
+          statusTd.innerHTML = `<span class="status-accepted">Accepted</span>`;
         }
       });
-      document.getElementById("btn-batch-file").innerText = "11 Cases Filed";
-      document.getElementById("btn-batch-file").disabled = true;
+      document.getElementById("btn-accept").disabled = true;
     }
 
     function resetQueue() {
-      classifiedState = false;
+      isClassified = false;
       document.getElementById("count-query").innerText = "0";
       document.getElementById("count-request").innerText = "0";
       document.getElementById("count-complaint").innerText = "0";
       document.getElementById("count-stopped").innerText = "0";
-      document.getElementById("count-saved").innerText = "—";
 
       const btn = document.getElementById("btn-classify");
-      btn.innerText = "Run Batch Triage";
+      btn.innerText = "Classify queue";
       btn.disabled = false;
 
-      const fileBtn = document.getElementById("btn-batch-file");
-      fileBtn.innerText = "1-Click Batch File (11 Verified)";
-      fileBtn.disabled = true;
+      const acceptBtn = document.getElementById("btn-accept");
+      acceptBtn.disabled = true;
 
-      renderTable();
+      renderQueue();
     }
 
-    // Initial Render
-    renderTable();
+    // Initialize table on load
+    renderQueue();
   </script>
 </body>
 </html>
